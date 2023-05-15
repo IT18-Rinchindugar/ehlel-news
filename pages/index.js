@@ -20,6 +20,7 @@ const articleImg =
 
 function Home() {
   const [newArticles, setNewArticles] = useState([]);
+  const [bannerLoading, setBannerLoading] = useState(true)
   const [newBanners, setNewBanners] = useState([]);
 
   // article fetch
@@ -28,7 +29,8 @@ function Home() {
   }
 
   function fetchNewBanners() {
-    axios.get(`${BACKEND_URL}/banners`).then((res) => setNewBanners(res.data));
+    setBannerLoading(true);
+    axios.get(`${BACKEND_URL}/banners`).then((res) => setNewBanners(res.data)).finally(() => setBannerLoading(false));
   }
 
   useEffect(() => {
@@ -42,18 +44,25 @@ function Home() {
         <Header />
       </section>
       <section className="relative">
-        <Swiper
-          slidesPerView={1}
-        >
-          {newBanners.map((banner) => (
-            <SwiperSlide>
-              <BannerCard
-                image={banner.image}
-                title={banner.title}
-                description={banner.description} />
-            </SwiperSlide>
-          ))}
-        </Swiper>
+        {bannerLoading && (
+          <section className='h-screen bg-black w-full flex justify-center items-center'>
+            <h1 className='text-white'>Өгөгдөл татаж байнаа ...</h1>
+          </section>
+        )}
+        {!bannerLoading && (
+          <Swiper
+            slidesPerView={1}
+          >
+            {newBanners.map((banner) => (
+              <SwiperSlide>
+                <BannerCard
+                  image={banner.image}
+                  title={banner.title}
+                  description={banner.description} />
+              </SwiperSlide>
+            ))}
+          </Swiper>
+        )}
       </section>
       <section className="mx-10 mt-10">
         <h1 className="text-2xl">Шинэ мэдээ</h1>
